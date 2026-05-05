@@ -1,0 +1,5 @@
+usuarios(todos tienen un rol distinto):
+admin
+vendedor1
+cliente1
+contraseña: 1234

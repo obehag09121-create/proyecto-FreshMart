@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshMart — Supermercado Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== LANDING PAGE ========== -->
+<div id="landingPage" class="landing-overlay">
+  <div class="landing-bg"></div>
+  <div class="landing-content">
+    <div class="landing-badge">Supermercado Online</div>
+    <h1 class="landing-title">Fresh<span>Mart</span></h1>
+    <p class="landing-sub">Productos frescos, directo a tu puerta.<br>Compra fácil, recibe en casa.</p>
+    <div class="landing-features">
+      <span>Productos frescos</span>
+      <span>Carrito inteligente</span>
+      <span>Calificaciones reales</span>
+    </div>
+    <button class="btn-landing" onclick="irAlLogin()">Entrar a la tienda →</button>
+  </div>
+</div>
+
+<!-- ========== LOGIN / REGISTRO ========== -->
+<div id="authOverlay" class="auth-overlay hidden">
+  <div class="auth-box">
+    <div class="auth-logo">FreshMart</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Iniciar Sesión</button>
+      <button class="auth-tab" onclick="switchTab('registro')">Registrarse</button>
+    </div>
+    <!-- Login -->
+    <div id="tabLogin" class="auth-form active">
+      <input type="text" id="loginUser" placeholder="Usuario" />
+      <input type="password" id="loginPass" placeholder="Contraseña" />
+      <button class="btn-primary" onclick="hacerLogin()">Entrar</button>
+      <p id="loginError" class="error-msg"></p>
+      <div class="auth-cred-hint">Acceso de prueba: admin / vendedor1 / cliente1 (contraseña: 1234)</div>
+    </div>
+    <!-- Registro -->
+    <div id="tabRegistro" class="auth-form">
+      <input type="text" id="regUser" placeholder="Nombre de usuario" />
+      <input type="password" id="regPass" placeholder="Contraseña" />
+      <select id="regRol">
+        <option value="cliente">Cliente</option>
+        <option value="vendedor">Vendedor</option>
+      </select>
+      <button class="btn-primary" onclick="registrarUsuario()">Crear cuenta</button>
+      <p id="regError" class="error-msg"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== HEADER ========== -->
+<header id="mainHeader" class="hidden">
+  <div class="header-left">
+    <div class="logo">FreshMart</div>
+    <nav class="nav-links">
+      <a href="#" onclick="mostrarVista('tienda')" class="nav-link active">Tienda</a>
+      <a href="#" onclick="mostrarVista('historial')" class="nav-link cliente-only hidden">Mis Pedidos</a>
+      <a href="#" onclick="mostrarVista('misProductos')" class="nav-link vendedor-only hidden">Mis Productos</a>
+      <a href="#" onclick="mostrarVista('admin')" class="nav-link admin-only hidden">Panel Admin</a>
+    </nav>
+  </div>
+  <div class="header-right">
+    <div class="user-badge" id="userBadge"></div>
+    <select id="selectorMoneda" class="selector-moneda" onchange="cambiarMoneda(this.value)">
+      <option value="USD">USD</option>
+      <option value="CLP" selected>CLP</option>
+      <option value="EUR">EUR</option>
+      <option value="GBP">GBP</option>
+      <option value="JPY">JPY</option>
+      <option value="BRL">BRL</option>
+      <option value="MXN">MXN</option>
+    </select>
+    <button class="btn-darkmode" onclick="toggleDarkMode()" id="darkModeBtn" title="Modo oscuro/claro">🌙</button>
+    <button class="btn-about" onclick="abrirModal('modalAcerca')">Información</button>
+    <div class="carrito-btn" onclick="abrirCarrito()">
+      Carrito <span id="contadorCarrito">0</span>
+    </div>
+    <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+  </div>
+</header>
+
+<!-- ========== VISTA: TIENDA ========== -->
+<main id="vistaTienda" class="vista hidden">
+  <div class="tienda-hero">
+    <h1>Productos Frescos<br><span>directo a tu puerta</span></h1>
+    <p>Compra desde casa, recibe en casa.</p>
+  </div>
+
+  <div class="tienda-container">
+    <div class="filtros-bar">
+      <div class="buscador-wrapper">
+        <input type="text" id="buscador" placeholder="Buscar producto..." oninput="filtrarProductos()" autocomplete="off" />
+        <div id="sugerencias" class="sugerencias-dropdown hidden"></div>
+      </div>
+      <select id="filtroCat" onchange="filtrarProductos()">
+        <option value="">Todas las categorías</option>
+        <option value="frutas">Frutas</option>
+        <option value="verduras">Verduras</option>
+        <option value="lacteos">Lácteos</option>
+        <option value="carnes">Carnes</option>
+        <option value="panaderia">Panadería</option>
+        <option value="bebidas">Bebidas</option>
+        <option value="otros">Otros</option>
+      </select>
+      <select id="filtroOrden" onchange="filtrarProductos()">
+        <option value="">Ordenar por...</option>
+        <option value="precio_asc">Precio: Menor a Mayor</option>
+        <option value="precio_desc">Precio: Mayor a Menor</option>
+        <option value="nombre_asc">Nombre: A-Z</option>
+        <option value="nombre_desc">Nombre: Z-A</option>
+        <option value="rating">Mejor calificados</option>
+      </select>
+    </div>
+
+    <div id="productos" class="productos-grid"></div>
+  </div>
+</main>
+
+<!-- ========== VISTA: HISTORIAL DE COMPRAS ========== -->
+<main id="vistaHistorial" class="vista hidden">
+  <div class="panel-header">
+    <h2>Mis Pedidos</h2>
+  </div>
+  <div id="historialContenido"></div>
+</main>
+
+<!-- ========== VISTA: MIS PRODUCTOS (Vendedor) ========== -->
+<main id="vistaMisProductos" class="vista hidden">
+  <div class="panel-header">
+    <h2>Mis Productos</h2>
+    <button class="btn-primary" onclick="abrirModalAgregarProducto()">+ Agregar Producto</button>
+  </div>
+  <div id="graficoVentasBox" class="grafico-box hidden">
+    <h3>Mis Ventas por Producto</h3>
+    <div id="graficoVentas" class="grafico-barras"></div>
+  </div>
+  <div id="misProductosGrid" class="productos-grid"></div>
+</main>
+
+<!-- ========== VISTA: ADMIN ========== -->
+<main id="vistaAdmin" class="vista hidden">
+  <div class="admin-container">
+    <h2>Panel de Administración</h2>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="admin-section">
+      <h3>Usuarios Registrados</h3>
+      <div id="tablaUsuarios"></div>
+    </div>
+    <div class="admin-section">
+      <h3>Todos los Productos</h3>
+      <div id="tablaProductosAdmin"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== MODAL: CARRITO ========== -->
+<div id="modalCarrito" class="modal">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h2>Tu Carrito</h2>
+      <span class="cerrar" onclick="cerrarModal('modalCarrito')">&times;</span>
+    </div>
+    <div id="itemsCarrito"></div>
+    <div class="carrito-total">
+      <strong>Total: <span id="totalCarrito">0.00</span></strong>
+    </div>
+    <div class="carrito-acciones">
+      <button id="comprarBtn" class="btn-primary" onclick="finalizarCompra()">Finalizar Compra</button>
+      <button id="vaciarBtn" class="btn-danger" onclick="vaciarCarrito()">Vaciar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: AGREGAR / EDITAR PRODUCTO ========== -->
+<div id="modalProducto" class="modal">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h2 id="modalProductoTitulo">Agregar Producto</h2>
+      <span class="cerrar" onclick="cerrarModal('modalProducto')">&times;</span>
+    </div>
+    <div class="form-group">
+      <input type="hidden" id="prodId" />
+      <input type="text" id="prodNombre" placeholder="Nombre del producto" />
+      <input type="number" id="prodPrecio" placeholder="Precio" step="0.01" min="0" />
+      <input type="number" id="prodStock" placeholder="Stock disponible" min="1" />
+      <select id="prodCategoria">
+        <option value="frutas">Frutas</option>
+        <option value="verduras">Verduras</option>
+        <option value="lacteos">Lácteos</option>
+        <option value="carnes">Carnes</option>
+        <option value="panaderia">Panadería</option>
+        <option value="bebidas">Bebidas</option>
+        <option value="otros">Otros</option>
+      </select>
+      <input type="text" id="prodImagen" placeholder="URL de imagen (opcional)" />
+      <textarea id="prodDescripcion" placeholder="Descripción del producto"></textarea>
+    </div>
+    <button class="btn-primary" onclick="guardarProducto()">Guardar</button>
+    <p id="prodError" class="error-msg"></p>
+  </div>
+</div>
+
+<!-- ========== MODAL: CALIFICAR ========== -->
+<div id="modalCalificar" class="modal">
+  <div class="modal-contenido modal-small">
+    <div class="modal-header">
+      <h2>Calificar Producto</h2>
+      <span class="cerrar" onclick="cerrarModal('modalCalificar')">&times;</span>
+    </div>
+    <p id="calificarNombre" style="margin-bottom:1rem;font-weight:600;"></p>
+    <div class="estrellas-selector" id="estrellasSelector">
+      <span class="estrella" data-val="1" onclick="seleccionarEstrella(1)">★</span>
+      <span class="estrella" data-val="2" onclick="seleccionarEstrella(2)">★</span>
+      <span class="estrella" data-val="3" onclick="seleccionarEstrella(3)">★</span>
+      <span class="estrella" data-val="4" onclick="seleccionarEstrella(4)">★</span>
+      <span class="estrella" data-val="5" onclick="seleccionarEstrella(5)">★</span>
+    </div>
+    <textarea id="calificarComentario" placeholder="Deja un comentario (opcional)"></textarea>
+    <input type="hidden" id="calificarProdId" />
+    <button class="btn-primary" onclick="enviarCalificacion()">Enviar</button>
+    <p id="calError" class="error-msg"></p>
+  </div>
+</div>
+
+<!-- ========== MODAL: DETALLE PRODUCTO ========== -->
+<div id="modalDetalle" class="modal">
+  <div class="modal-contenido modal-large">
+    <div class="modal-header">
+      <h2 id="detalleTitulo"></h2>
+      <span class="cerrar" onclick="cerrarModal('modalDetalle')">&times;</span>
+    </div>
+    <div id="detalleContenido"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL: ACERCA DE ========== -->
+<div id="modalAcerca" class="modal">
+  <div class="modal-contenido modal-large">
+    <div class="modal-header">
+      <h2>Sobre FreshMart</h2>
+      <span class="cerrar" onclick="cerrarModal('modalAcerca')">&times;</span>
+    </div>
+    <div class="acerca-contenido">
+      <div class="acerca-hero">
+        <div class="acerca-logo">FreshMart</div>
+        <p>Plataforma de comercio electrónico para la venta de productos frescos y de calidad.</p>
+      </div>
+
+      <div class="acerca-seccion">
+        <h3>Nuestra misión</h3>
+        <p>FreshMart conecta compradores y vendedores en un entorno seguro y confiable, ofreciendo productos frescos con entregas rápidas y un servicio al cliente excepcional.</p>
+      </div>
+
+      <div class="acerca-seccion">
+        <h3>Tipos de cuenta</h3>
+        <div class="roles-grid">
+          <div class="rol-card">
+            <div class="rol-icon">👑</div>
+            <div class="rol-nombre">Administrador</div>
+            <ul>
+              <li>Gestión completa de usuarios y productos</li>
+              <li>Aprueba o rechaza productos</li>
+              <li>Estadísticas globales</li>
+            </ul>
+          </div>
+          <div class="rol-card">
+            <div class="rol-icon">🏪</div>
+            <div class="rol-nombre">Vendedor</div>
+            <ul>
+              <li>Administra sus propios productos</li>
+              <li>Visualiza sus ventas</li>
+              <li>Puede comprar como cliente</li>
+            </ul>
+          </div>
+          <div class="rol-card">
+            <div class="rol-icon">🛒</div>
+            <div class="rol-nombre">Cliente</div>
+            <ul>
+              <li>Compra productos</li>
+              <li>Historial de pedidos</li>
+              <li>Califica productos adquiridos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="acerca-seccion">
+        <h3>Funcionalidades</h3>
+        <div class="features-list">
+          <div class="feature-item">Buscador con sugerencias en tiempo real</div>
+          <div class="feature-item">Filtro por categoría y orden por precio</div>
+          <div class="feature-item">Modo oscuro / claro</div>
+          <div class="feature-item">Soporte para múltiples monedas</div>
+          <div class="feature-item">Gráfico de ventas por producto (vendedor)</div>
+          <div class="feature-item">Historial de compras (cliente)</div>
+          <div class="feature-item">Sistema de calificaciones y reseñas</div>
+        </div>
+      </div>
+
+      <div class="acerca-footer">
+        <p>FreshMart · Comercio electrónico</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PÁGINA DE CONFIRMACIÓN DE PAGO ========== -->
+<div id="paginaPago" class="pago-overlay hidden">
+  <div class="pago-box">
+    <div class="pago-icono">✓</div>
+    <h2>¡Compra Exitosa!</h2>
+    <p>Gracias por tu pedido en FreshMart.</p>
+    <div id="resumenPago" class="resumen-pago"></div>
+    <p class="pago-id">ID de Pedido: <strong id="pedidoId"></strong></p>
+    <button class="btn-primary" onclick="volverTienda()">Volver a la Tienda</button>
+  </div>
+</div>
+
+<!-- ========== TOAST ========== -->
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
