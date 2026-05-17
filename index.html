@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>BURZUMS | Tienda de Ropa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== LANDING PAGE ========== -->
+<div id="landingPage" class="landing-overlay">
+  <div class="landing-bg"></div>
+  <div class="landing-content">
+   <div class="landing-badge">Temporada Otoño/Invierno 2026</div>
+    <h1 class="landing-title">Burzums</h1>
+    <p class="landing-sub">Moda contemporánea con identidad.<br>Prendas que cuentan historias.</p>
+    <div class="landing-features">
+      <span>Envíos gratis</span>
+      <span>30 días de garantía</span>
+      <span>Diseño exclusivo</span>
+    </div>
+    <button class="btn-landing" onclick="irAlLogin()">Descubrir colección →</button>
+  </div>
+</div>
+
+<!-- ========== LOGIN / REGISTRO ========== -->
+<div id="authOverlay" class="auth-overlay hidden">
+  <div class="auth-box">
+    <div class="auth-logo">BURZUMS</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Iniciar Sesión</button>
+      <button class="auth-tab" onclick="switchTab('registro')">Registrarse</button>
+    </div>
+    <div id="tabLogin" class="auth-form active">
+      <input type="text" id="loginUser" placeholder="Usuario" />
+      <input type="password" id="loginPass" placeholder="Contraseña" />
+      <button class="btn-primary" onclick="hacerLogin()">Entrar</button>
+      <p id="loginError" class="error-msg"></p>
+      <div class="auth-cred-hint">Acceso: admin / vendedor1 / cliente1 · contraseña: 1234</div>
+    </div>
+    <div id="tabRegistro" class="auth-form">
+      <input type="text" id="regUser" placeholder="Nombre de usuario" />
+      <input type="password" id="regPass" placeholder="Contraseña" />
+      <select id="regRol">
+        <option value="cliente">Cliente</option>
+        <option value="vendedor">Vendedor (Marca/Designer)</option>
+      </select>
+      <button class="btn-primary" onclick="registrarUsuario()">Crear cuenta</button>
+      <p id="regError" class="error-msg"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== HEADER CON EFECTO SCROLL ========== -->
+<header id="mainHeader" class="header-scroll hidden">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">BURZUMS</div>
+      <nav class="nav-links">
+        <a href="#" onclick="mostrarVista('tienda')" class="nav-link active">Tienda</a>
+        <a href="#" onclick="mostrarVista('historial')" class="nav-link cliente-only hidden">Mis Pedidos</a>
+        <a href="#" onclick="mostrarVista('misProductos')" class="nav-link vendedor-only hidden">Mis Prendas</a>
+        <a href="#" onclick="mostrarVista('admin')" class="nav-link admin-only hidden">Panel Admin</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="user-badge" id="userBadge"></div>
+      <select id="selectorMoneda" class="selector-moneda" onchange="cambiarMoneda(this.value)">
+        <option value="USD">USD $</option>
+        <option value="CLP" selected>CLP $</option>
+        <option value="EUR">EUR €</option>
+        <option value="GBP">GBP £</option>
+        <option value="JPY">JPY ¥</option>
+        <option value="BRL">BRL R$</option>
+        <option value="MXN">MXN $</option>
+      </select>
+      <button class="btn-darkmode" onclick="toggleDarkMode()" id="darkModeBtn" title="Modo oscuro/claro">🌙</button>
+      <button class="btn-about" onclick="abrirModal('modalAcerca')">Sobre Burzums</button>
+      <div class="carrito-btn" onclick="abrirCarrito()">
+        🛒 <span id="contadorCarrito">0</span>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== VISTA: TIENDA  ========== -->
+<main id="vistaTienda" class="vista hidden">
+
+  <!-- HERO CON IMAGEN DE MODELO (NUEVO) -->
+  <section class="hero-fullscreen">
+    <div class="hero-image" id="heroImage"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-badge">Nueva Colección</span>
+      <h1 class="hero-title">Essential <br><span>Edition</span></h1>
+      <p class="hero-subtitle">Prendas versátiles para tu día a día</p>
+      <button class="btn-hero" onclick="scrollToProducts()">Comprar Ahora →</button>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS VISUALES CIRCULARES  -->
+  <section class="categories-section">
+    <div class="section-header">
+      <h2>Explora por Categoría</h2>
+      <div class="gold-line"></div>
+    </div>
+    <div class="categories-grid" id="categoriesGrid">
+      <div class="category-item" data-cat="camisas">
+        <div class="category-icon">👔</div>
+        <span>Camisas</span>
+      </div>
+      <div class="category-item" data-cat="vestidos">
+        <div class="category-icon">👗</div>
+        <span>Vestidos</span>
+      </div>
+      <div class="category-item" data-cat="pantalones">
+        <div class="category-icon">👖</div>
+        <span>Pantalones</span>
+      </div>
+      <div class="category-item" data-cat="chaquetas">
+        <div class="category-icon">🧥</div>
+        <span>Chaquetas</span>
+      </div>
+      <div class="category-item" data-cat="tops">
+        <div class="category-icon">👚</div>
+        <span>Tops</span>
+      </div>
+      <div class="category-item" data-cat="sudaderas">
+        <div class="category-icon">👕</div>
+        <span>Sudaderas</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN DE OFERTA CON TEMPORIZADOR  -->
+  <section class="offer-section" id="offerSection">
+    <div class="offer-badge">🔥 Oferta Flash</div>
+    <h3>Hasta 40% OFF</h3>
+    <p>En seleccionados productos de la colección Essential</p>
+    <div class="countdown-timer" id="countdownTimer">
+      <div class="timer-block"><span id="hours">00</span><small>Horas</small></div>
+      <div class="timer-block"><span id="minutes">00</span><small>Minutos</small></div>
+      <div class="timer-block"><span id="seconds">00</span><small>Segundos</small></div>
+    </div>
+    <button class="btn-offer" onclick="filtrarOfertas()">Ver ofertas →</button>
+  </section>
+
+  <!-- CONTENEDOR PRINCIPAL CON FILTROS LATERALES + GRID -->
+  <div class="tienda-layout">
+    
+    <!-- SIDEBAR DE FILTROS  -->
+    <aside class="filtros-sidebar">
+      <div class="filtros-header">
+        <h4>Filtros</h4>
+        <button class="btn-reset-filters" onclick="resetFilters()">Limpiar</button>
+      </div>
+      
+      <div class="filtro-grupo">
+        <div class="filtro-titulo" onclick="toggleFiltro(this)">Categoría</div>
+        <div class="filtro-opciones">
+          <label><input type="checkbox" value="camisas" class="filtro-cat"> Camisas</label>
+          <label><input type="checkbox" value="vestidos" class="filtro-cat"> Vestidos</label>
+          <label><input type="checkbox" value="pantalones" class="filtro-cat"> Pantalones</label>
+          <label><input type="checkbox" value="chaquetas" class="filtro-cat"> Chaquetas</label>
+          <label><input type="checkbox" value="tops" class="filtro-cat"> Tops</label>
+          <label><input type="checkbox" value="sudaderas" class="filtro-cat"> Sudaderas</label>
+        </div>
+      </div>
+
+      <div class="filtro-grupo">
+        <div class="filtro-titulo" onclick="toggleFiltro(this)">Precio</div>
+        <div class="filtro-opciones">
+          <input type="range" id="precioMin" min="0" max="200" step="10" value="0">
+          <input type="range" id="precioMax" min="0" max="200" step="10" value="200">
+          <div class="precio-rango">
+            <span>$<span id="minVal">0</span></span>
+            <span>$<span id="maxVal">200</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filtro-grupo">
+        <div class="filtro-titulo" onclick="toggleFiltro(this)">Ordenar por</div>
+        <div class="filtro-opciones">
+          <select id="filtroOrdenSidebar" onchange="filtrarProductosSidebar()">
+            <option value="">Por defecto</option>
+            <option value="precio_asc">Precio: menor a mayor</option>
+            <option value="precio_desc">Precio: mayor a menor</option>
+            <option value="nombre_asc">Nombre: A-Z</option>
+            <option value="rating">Mejor calificados</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <!-- GRID DE PRODUCTOS  -->
+    <div class="productos-container">
+      <div class="productos-header">
+        <div class="buscador-wrapper">
+          <input type="text" id="buscador" placeholder="Buscar prenda, colección..." oninput="filtrarProductosSidebar()" autocomplete="off" />
+          <div id="sugerencias" class="sugerencias-dropdown hidden"></div>
+        </div>
+        <div class="productos-count" id="productosCount">Mostrando 0 productos</div>
+      </div>
+      <div id="productos" class="productos-grid grid-asimetrico"></div>
+      <div id="loadMoreContainer" class="load-more-container">
+        <button id="loadMoreBtn" class="btn-load-more" onclick="cargarMasProductos()">Cargar más productos</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== VISTA: HISTORIAL DE COMPRAS ========== -->
+<main id="vistaHistorial" class="vista hidden">
+  <div class="panel-header">
+    <h2>Mis Pedidos</h2>
+  </div>
+  <div id="historialContenido"></div>
+</main>
+
+<!-- ========== VISTA: MIS PRODUCTOS (Vendedor) ========== -->
+<main id="vistaMisProductos" class="vista hidden">
+  <div class="panel-header">
+    <h2>Mis Prendas</h2>
+    <button class="btn-primary" onclick="abrirModalAgregarProducto()">+ Agregar Prenda</button>
+  </div>
+  <div id="graficoVentasBox" class="grafico-box hidden">
+    <h3>Mis Ventas por Prenda</h3>
+    <div id="graficoVentas" class="grafico-barras"></div>
+  </div>
+  <div id="misProductosGrid" class="productos-grid"></div>
+</main>
+
+<!-- ========== VISTA: ADMIN ========== -->
+<main id="vistaAdmin" class="vista hidden">
+  <div class="admin-container">
+    <h2>Panel de Administración</h2>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="admin-section">
+      <h3>Usuarios Registrados</h3>
+      <div id="tablaUsuarios"></div>
+    </div>
+    <div class="admin-section">
+      <h3>Todas las Prendas</h3>
+      <div id="tablaProductosAdmin"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== MODALES  ========== -->
+<div id="modalCarrito" class="modal">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h2>Tu Bolsa</h2>
+      <span class="cerrar" onclick="cerrarModal('modalCarrito')">&times;</span>
+    </div>
+    <div id="itemsCarrito"></div>
+    <div class="carrito-total">
+      <strong>Total: <span id="totalCarrito">0.00</span></strong>
+    </div>
+    <div class="carrito-acciones">
+      <button id="comprarBtn" class="btn-primary" onclick="finalizarCompra()">Finalizar Compra</button>
+      <button id="vaciarBtn" class="btn-danger" onclick="vaciarCarrito()">Vaciar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalProducto" class="modal">
+  <div class="modal-contenido">
+    <div class="modal-header">
+      <h2 id="modalProductoTitulo">Agregar Prenda</h2>
+      <span class="cerrar" onclick="cerrarModal('modalProducto')">&times;</span>
+    </div>
+    <div class="form-group">
+      <input type="hidden" id="prodId" />
+      <input type="text" id="prodNombre" placeholder="Nombre de la prenda" />
+      <input type="number" id="prodPrecio" placeholder="Precio" step="0.01" min="0" />
+      <input type="number" id="prodStock" placeholder="Stock disponible" min="1" />
+      <select id="prodCategoria">
+        <option value="camisas">Camisas</option>
+        <option value="vestidos">Vestidos</option>
+        <option value="pantalones">Pantalones</option>
+        <option value="chaquetas">Chaquetas</option>
+        <option value="tops">Tops</option>
+        <option value="sudaderas">Sudaderas</option>
+        <option value="accesorios">Accesorios</option>
+      </select>
+      <input type="text" id="prodImagen" placeholder="URL de imagen (opcional)" />
+      <input type="text" id="prodImagenHover" placeholder="URL de imagen hover (opcional)" />
+      <textarea id="prodDescripcion" placeholder="Descripción de la prenda"></textarea>
+    </div>
+    <button class="btn-primary" onclick="guardarProducto()">Guardar</button>
+    <p id="prodError" class="error-msg"></p>
+  </div>
+</div>
+
+<div id="modalCalificar" class="modal">
+  <div class="modal-contenido modal-small">
+    <div class="modal-header">
+      <h2>Calificar Prenda</h2>
+      <span class="cerrar" onclick="cerrarModal('modalCalificar')">&times;</span>
+    </div>
+    <p id="calificarNombre" style="margin-bottom:1rem;font-weight:600;"></p>
+    <div class="estrellas-selector" id="estrellasSelector">
+      <span class="estrella" data-val="1" onclick="seleccionarEstrella(1)">★</span>
+      <span class="estrella" data-val="2" onclick="seleccionarEstrella(2)">★</span>
+      <span class="estrella" data-val="3" onclick="seleccionarEstrella(3)">★</span>
+      <span class="estrella" data-val="4" onclick="seleccionarEstrella(4)">★</span>
+      <span class="estrella" data-val="5" onclick="seleccionarEstrella(5)">★</span>
+    </div>
+    <textarea id="calificarComentario" placeholder="Deja tu opinión sobre la prenda..."></textarea>
+    <input type="hidden" id="calificarProdId" />
+    <button class="btn-primary" onclick="enviarCalificacion()">Enviar</button>
+    <p id="calError" class="error-msg"></p>
+  </div>
+</div>
+
+<div id="modalDetalle" class="modal">
+  <div class="modal-contenido modal-large">
+    <div class="modal-header">
+      <h2 id="detalleTitulo"></h2>
+      <span class="cerrar" onclick="cerrarModal('modalDetalle')">&times;</span>
+    </div>
+    <div id="detalleContenido"></div>
+  </div>
+</div>
+
+<div id="modalAcerca" class="modal">
+  <div class="modal-contenido modal-large">
+    <div class="modal-header">
+      <h2>Sobre Burzums</h2>
+      <span class="cerrar" onclick="cerrarModal('modalAcerca')">&times;</span>
+    </div>
+    <div class="acerca-contenido">
+      <div class="acerca-hero">
+        <div class="acerca-logo">BURZUMS</div>
+        <p>Moda contemporánea con identidad. Prendas que cuentan historias.</p>
+      </div>
+      <div class="acerca-seccion">
+        <h3>Nuestra filosofía</h3>
+        <p>En Burzums creemos que la ropa es una extensión de quienes somos.</p>
+      </div>
+      <div class="acerca-seccion">
+        <h3>Tipos de cuenta</h3>
+        <div class="roles-grid">
+          <div class="rol-card"><div class="rol-icon">👑</div><div class="rol-nombre">Administrador</div><ul><li>Gestión completa</li></ul></div>
+          <div class="rol-card"><div class="rol-icon">🏷️</div><div class="rol-nombre">Marca/Designer</div><ul><li>Administra sus prendas</li></ul></div>
+          <div class="rol-card"><div class="rol-icon">🛍️</div><div class="rol-nombre">Cliente</div><ul><li>Compra y califica</li></ul></div>
+        </div>
+      </div>
+      <div class="acerca-footer"><p>Burzums · Moda con identidad</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PÁGINA DE CONFIRMACIÓN DE PAGO ========== -->
+<div id="paginaPago" class="pago-overlay hidden">
+  <div class="pago-box">
+    <div class="pago-icono">✓</div>
+    <h2>¡Pedido Confirmado!</h2>
+    <p>Gracias por tu compra en Burzums.</p>
+    <div id="resumenPago" class="resumen-pago"></div>
+    <p class="pago-id">ID de Pedido: <strong id="pedidoId"></strong></p>
+    <button class="btn-primary" onclick="volverTienda()">Seguir Comprando</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <div class="footer-brand-logo">BURZUMS</div>
+      <p>Moda contemporánea con identidad.</p>
+      <p>© 2025 Burzums - Todos los derechos reservados</p>
+    </div>
+    <div class="footer-section">
+      <h4>Enlaces rápidos</h4>
+      <a href="#" onclick="mostrarVista('tienda')">Tienda</a>
+      <a href="#" onclick="abrirModal('modalAcerca')">Sobre Burzums</a>
+      <a href="#">Términos y condiciones</a>
+    </div>
+    <div class="footer-section">
+      <h4>Contacto</h4>
+      <p>📧 hola@burzums.com</p>
+      <p>📞 +56 2 2345 6789</p>
+    </div>
+    <div class="footer-section">
+      <h4>Síguenos</h4>
+      <p>📱 Instagram</p>
+      <p>👍 Facebook</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>Burzums - Moda con identidad</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
